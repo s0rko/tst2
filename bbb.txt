@@ -1,2 +1,6 @@
 bububub
+<<<<<<< HEAD
+yyy_code
+=======
 new data, dont commit it
+>>>>>>> 6a7553ed713990d629786b14ef80af05a255a589
