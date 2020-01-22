@@ -4,7 +4,7 @@
 # ===========================================
 # git folder
 # comment it for use current folder
-target_dir="/home/rm/gtst/tst1/"
+#target_dir="/home/rm/gtst/tst1/"
 # temp repo url for upload/download 
 temp_repo="https://github.com/s0rko/tst2.git"
 # name for remote repo (git remote add [temp_repo_name])
@@ -12,6 +12,22 @@ temp_repo_name="upserv"
 # temp branch name
 temp_branch_name="upload"
 # ===========================================
+head_chanded=0
+function out_handler ()
+{
+   if [ head_chanded = 0 ]
+   then
+   exit
+   else
+   echo "Shit happend. Discarding changes."
+   git symbolic-ref HEAD ${head_var}
+   git branch -D ${temp_branch_name}
+   git remote rm ${temp_repo_name}
+   git reset .
+   exit   
+   fi
+} 
+trap out_handler 1 2 3 9 15
 if [ ! -n "$1" ]
 then
 echo "Use keys plz: updl [up/dl]"
@@ -29,24 +45,30 @@ head_var=$(git symbolic-ref HEAD)
 git remote add ${temp_repo_name} ${temp_repo}
 git branch ${temp_branch_name}
 git checkout ${temp_branch_name}
+head_chanded=1
 git add .
-git commit -m 'temp commit'
+#git commit -m 'temp commit'
 
   if [ "$1" = "up" ] 
   then
   echo "Uploading.."
+  git commit -m "tmp UPl commit"
   git push ${temp_repo_name} ${temp_branch_name} -f
   else
   echo "Downloading.."
+  git commit -m "tmp DL commit"
   git pull --no-edit ${temp_repo_name} ${temp_branch_name} 
 #   git fetch ${temp_repo_name} ${temp_branch_name}
 #   git merge ${temp_branch_name}
   fi
 # вытаскиваем запомненное положение бошки и переставляем ее
 git symbolic-ref HEAD ${head_var}
+head_chanded=0
 git branch -D ${temp_branch_name}
 git remote rm ${temp_repo_name}
 git reset .
-echo "Something heppens"
+echo "Something has been done :)"
+exit
 fi
+echo "Use keys plz: updl [up/dl]"
 
