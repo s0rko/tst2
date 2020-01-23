@@ -67,7 +67,7 @@ head_chanded=0
 git branch -D ${temp_branch_name}
 git remote rm ${temp_repo_name}
 git reset .
-echo "Something has been done :)"
+echo "The leprognomes did something. Maybe they didn’t even break anything :)"
 exit
 fi
 echo "Use keys plz: updl [up/dl]"
