@@ -42,6 +42,7 @@ then
   fi
 
 head_var=$(git symbolic-ref HEAD)
+last_commit=$(git log --pretty=format:"%h" -n 1)
 git remote add ${temp_repo_name} ${temp_repo}
 git branch ${temp_branch_name}
 git checkout ${temp_branch_name}
