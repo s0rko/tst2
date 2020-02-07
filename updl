@@ -13,6 +13,7 @@ temp_repo_name="upserv"
 temp_branch_name="upload"
 # ===========================================
 head_chanded=0
+pull_err_lvl=0
 function out_handler ()
 {
    if [ head_chanded = 0 ]
@@ -59,6 +60,7 @@ git add .
   echo "Downloading.."
   git commit -m "tmp DL commit"
   end_echo=$(git pull --no-edit ${temp_repo_name} ${temp_branch_name})
+  pull_err_lvl=$(echo $?)
 #   git fetch ${temp_repo_name} ${temp_branch_name}
 #   git merge ${temp_branch_name}
   fi
@@ -69,11 +71,11 @@ git branch -D ${temp_branch_name}
 git remote rm ${temp_repo_name}
 git reset .
 echo "The leprognomes did something. Maybe they didn’t even break anything :)"
-if [ ! -n "$end_echo" ]
+if [ "$pull_err_lvl" != 0 ]
 then
 echo "===================================="
 echo "Houston, we've had a problem:"
-echo end_echo
+echo "$end_echo"
 fi
 echo "Use keys plz: updl [up/dl]"
 
