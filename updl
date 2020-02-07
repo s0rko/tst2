@@ -58,7 +58,7 @@ git add .
   else
   echo "Downloading.."
   git commit -m "tmp DL commit"
-  git pull --no-edit ${temp_repo_name} ${temp_branch_name} 
+  end_echo=$(git pull --no-edit ${temp_repo_name} ${temp_branch_name})
 #   git fetch ${temp_repo_name} ${temp_branch_name}
 #   git merge ${temp_branch_name}
   fi
@@ -69,7 +69,11 @@ git branch -D ${temp_branch_name}
 git remote rm ${temp_repo_name}
 git reset .
 echo "The leprognomes did something. Maybe they didn’t even break anything :)"
-exit
+if [ ! -n "$end_echo" ]
+then
+echo "===================================="
+echo "Houston, we've had a problem:"
+echo end_echo
 fi
 echo "Use keys plz: updl [up/dl]"
 
