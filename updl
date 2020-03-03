@@ -12,70 +12,82 @@ temp_repo_name="upserv"
 # temp branch name
 temp_branch_name="upload"
 # ===========================================
+#      trash - ugar i sodomia
+# ===========================================
 head_chanded=0
 pull_err_lvl=0
+pull_err_msg=""
+push_err_lvl=0
+push_err_msg=""
+# ctl+c and other shit catch func
 function out_handler ()
 {
    if [ head_chanded = 0 ]
-   then
-   exit
-   else
-   echo "Shit happend. Discarding changes."
-   git symbolic-ref HEAD ${head_var}
-   git branch -D ${temp_branch_name}
-   git remote rm ${temp_repo_name}
-   git reset .
-   exit   
+     then
+     exit
+     else     
+     git symbolic-ref HEAD ${head_var}
+     git reset ${last_commit}
+     git branch -D ${temp_branch_name}
+     git remote rm ${temp_repo_name}
+     git reset .
+     echo -e "\e[31mShit happend. Changes discarded.\e[0m"
+     exit   
    fi
 } 
 trap out_handler 1 2 3 9 15
+
 if [ ! -n "$1" ]
-then
-echo "Use keys plz: updl [up/dl]"
-exit
+  then
+  echo "Use keys plz: updl [up/dl]"
+  exit
 fi
 if [ "$1" = "up" -o "$1" = "dl" ]
-then
-
-  if [ -n "$target_dir" ]
   then
-  cd $target_dir
+  if [ -n "$target_dir" ]
+    then
+    cd $target_dir
   fi
-
-head_var=$(git symbolic-ref HEAD)
-last_commit=$(git log --pretty=format:"%h" -n 1)
-git remote add ${temp_repo_name} ${temp_repo}
-git branch ${temp_branch_name}
-git checkout ${temp_branch_name}
-head_chanded=1
-git add .
-#git commit -m 'temp commit'
+  head_var=$(git symbolic-ref HEAD)
+#(git log --pretty=format:"%h" -n 1)
+  last_commit=$(git rev-parse HEAD)
+  git remote add ${temp_repo_name} ${temp_repo}
+  git branch ${temp_branch_name}
+  git checkout ${temp_branch_name}
+  head_chanded=1
+  git add .
 
   if [ "$1" = "up" ] 
-  then
-  echo "Uploading.."
-  git commit -m "tmp UPl commit"
-  git push ${temp_repo_name} ${temp_branch_name} -f
-  else
-  echo "Downloading.."
-  git commit -m "tmp DL commit"
-  end_echo=$(git pull --no-edit ${temp_repo_name} ${temp_branch_name})
-  pull_err_lvl=$(echo $?)
+    then
+    echo "Uploading.."
+    git commit -m "tmp UPload commit"
+    push_err_msg=$(git push ${temp_repo_name} ${temp_branch_name} -f)
+    push_err_lvl=$(echo $?)
+    else
+    echo "Downloading.."
+    git commit -m "tmp DL commit"
+    pull_err_msg=$(git pull --no-edit ${temp_repo_name} ${temp_branch_name})
+    pull_err_lvl=$(echo $?)
 #   git fetch ${temp_repo_name} ${temp_branch_name}
 #   git merge ${temp_branch_name}
   fi
 # вытаскиваем запомненное положение бошки и переставляем ее
-git symbolic-ref HEAD ${head_var}
-head_chanded=0
-git branch -D ${temp_branch_name}
-git remote rm ${temp_repo_name}
-git reset .
-echo "The leprognomes did something. Maybe they didn’t even break anything :)"
-if [ "$pull_err_lvl" != 0 ]
-then
-echo "===================================="
-echo "Houston, we've had a problem:"
-echo "$end_echo"
+  git symbolic-ref HEAD ${head_var}
+  git reset ${last_commit}
+  head_chanded=0
+  git branch -D ${temp_branch_name}
+  git remote rm ${temp_repo_name}
+#  git reset .  
+  if [ "$pull_err_lvl" != 0 -o "$push_err_lvl" != 0 ]
+    then
+    echo "===================================="
+    echo -e "\e[31mHouston, we've had a problem:\e[0m"
+    echo "$pull_err_msg"
+    echo "$push_err_msg"
+    exit
+  fi
+  echo "===================================="
+  echo -e "\e[32mThe leprognomes did something. Maybe they didn’t even break anything :) \e[0m"
+  exit
 fi
 echo "Use keys plz: updl [up/dl]"
-
